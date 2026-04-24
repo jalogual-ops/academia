@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)file:///C:/Users/24374419P/Downloads/gemini-code-1777019738739.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador Pro - Oposiciones</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        /* Calendario */
+        .grid-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 20px; }
+        .day { min-height: 80px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; position: relative; background: #fff; transition: 0.2s; }
+        .day:hover { border-color: var(--secondary); background: #f0f9ff; }
+        .day.has-task { background: #fff4e5; border-color: var(--accent); }
+        .day-number { font-weight: bold; display: block; margin-bottom: 5px; }
+        .task-preview { font-size: 0.75em; color: #666; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+        /* Modal (Ventana de edición) */
+        #modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                 background: white; padding: 25px; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.3); z-index: 10; width: 300px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5; }
+        
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn-save { background: var(--secondary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="cerrarModal()"></div>
+
+<div class="container">
+    <h1>📅 Mi Calendario de Estudio</h1>
+    <p>Haz clic en un día para asignar un tema u objetivo.</p>
+    
+    <div class="grid-calendar" id="calendar-days"><div class="day"><span class="day-number">1</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">2</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">3</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">4</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">5</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">6</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">7</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">8</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">9</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">10</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">11</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">12</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">13</span>
+                                <span class="task-preview"></span></div><div class="day has-task"><span class="day-number">14</span>
+                                <span class="task-preview">t. 4</span></div><div class="day"><span class="day-number">15</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">16</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">17</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">18</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">19</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">20</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">21</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">22</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">23</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">24</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">25</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">26</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">27</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">28</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">29</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">30</span>
+                                <span class="task-preview"></span></div><div class="day"><span class="day-number">31</span>
+                                <span class="task-preview"></span></div></div>
+
+    <div id="modal">
+        <h3>Editar objetivo</h3>
+        <p id="fecha-label"></p>
+        <input type="text" id="task-input" placeholder="Ej: Repasar Tema 4...">
+        <button class="btn-save" onclick="guardarTarea()">Guardar Objetivo</button>
+    </div>
+</div>
+
+<script>
+    let diaSeleccionado = null;
+    const storageKey = "plan_estudio_opos";
+
+    function generarCalendario() {
+        const grid = document.getElementById('calendar-days');
+        grid.innerHTML = '';
+        const tareasGuardadas = JSON.parse(localStorage.getItem(storageKey) || "{}");
+
+        for (let i = 1; i <= 31; i++) {
+            const dayDiv = document.createElement('div');
+            const tarea = tareasGuardadas[i] || "";
+            
+            dayDiv.className = 'day' + (tarea ? ' has-task' : '');
+            dayDiv.innerHTML = `<span class="day-number">${i}</span>
+                                <span class="task-preview">${tarea}</span>`;
+            
+            dayDiv.onclick = () => abrirModal(i, tarea);
+            grid.appendChild(dayDiv);
+        }
+    }
+
+    function abrirModal(dia, tareaExistente) {
+        diaSeleccionado = dia;
+        document.getElementById('fecha-label').innerText = "Día " + dia;
+        document.getElementById('task-input').value = tareaExistente;
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function guardarTarea() {
+        const texto = document.getElementById('task-input').value;
+        let tareas = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        
+        if (texto.trim() === "") {
+            delete tareas[diaSeleccionado];
+        } else {
+            tareas[diaSeleccionado] = texto;
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(tareas));
+        cerrarModal();
+        generarCalendario(); // Refrescar vista
+    }
+
+    window.onload = generarCalendario;
+</script>
+
+
+</body></html>
