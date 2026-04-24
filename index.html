@@ -1,132 +1,235 @@
 <!DOCTYPE html>
-<!-- saved from url=(0067)file:///C:/Users/24374419P/Downloads/gemini-code-1777019738739.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Pro - Oposiciones</title>
+    <title>Academia Secretaría-Intervención</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f8f9fa; --success: #27ae60; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; }
+        .container { max-width: 950px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1, h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
         
-        /* Calendario */
-        .grid-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 20px; }
-        .day { min-height: 80px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; position: relative; background: #fff; transition: 0.2s; }
-        .day:hover { border-color: var(--secondary); background: #f0f9ff; }
-        .day.has-task { background: #fff4e5; border-color: var(--accent); }
-        .day-number { font-weight: bold; display: block; margin-bottom: 5px; }
-        .task-preview { font-size: 0.75em; color: #666; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .grid-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+        .dia { border: 1px solid #ddd; min-height: 60px; padding: 5px; border-radius: 8px; background: #fff; cursor: pointer; }
+        .dia-num { font-weight: bold; color: var(--accent); font-size: 0.9em; }
+        .info-estudio { font-size: 0.7em; color: #555; margin-top: 3px; background: #fff3cd; border-radius: 3px; padding: 2px; }
 
-        /* Modal (Ventana de edición) */
-        #modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                 background: white; padding: 25px; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.3); z-index: 10; width: 300px; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5; }
+        .barra-progreso { background: #eee; border-radius: 10px; height: 20px; margin: 15px 0; overflow: hidden; }
+        #progreso-relleno { background: var(--success); width: 0%; height: 100%; transition: 0.5s; text-align: center; color: white; font-size: 0.8em; line-height: 20px; }
         
-        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        .btn-save { background: var(--secondary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .lista-temas { max-height: 200px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; }
+        
+        .caja-test { background: #eef2f7; padding: 20px; border-radius: 10px; border-left: 5px solid var(--accent); }
+        .opcion-test { display: block; width: 100%; padding: 12px; margin: 8px 0; background: white; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1em; }
+        .correcta { background: var(--success) !important; color: white; }
+        .incorrecta { background: var(--danger) !important; color: white; }
+        #feedback { font-weight: bold; margin-top: 10px; height: 20px; }
     </style>
 </head>
 <body>
 
-<div class="overlay" id="overlay" onclick="cerrarModal()"></div>
-
 <div class="container">
-    <h1>📅 Mi Calendario de Estudio</h1>
-    <p>Haz clic en un día para asignar un tema u objetivo.</p>
-    
-    <div class="grid-calendar" id="calendar-days"><div class="day"><span class="day-number">1</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">2</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">3</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">4</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">5</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">6</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">7</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">8</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">9</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">10</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">11</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">12</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">13</span>
-                                <span class="task-preview"></span></div><div class="day has-task"><span class="day-number">14</span>
-                                <span class="task-preview">t. 4</span></div><div class="day"><span class="day-number">15</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">16</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">17</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">18</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">19</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">20</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">21</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">22</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">23</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">24</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">25</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">26</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">27</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">28</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">29</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">30</span>
-                                <span class="task-preview"></span></div><div class="day"><span class="day-number">31</span>
-                                <span class="task-preview"></span></div></div>
+    <h1>🏛️ Secretaría-Intervención</h1>
 
-    <div id="modal">
-        <h3>Editar objetivo</h3>
-        <p id="fecha-label"></p>
-        <input type="text" id="task-input" placeholder="Ej: Repasar Tema 4...">
-        <button class="btn-save" onclick="guardarTarea()">Guardar Objetivo</button>
+    <h2>1. Calendario</h2>
+    <div class="grid-calendar" id="cal-grid"></div>
+
+    <h2>2. Temario</h2>
+    <div class="barra-progreso"><div id="progreso-relleno">0%</div></div>
+    <div class="lista-temas" id="temario-dom"></div>
+
+    <h2>3. Test</h2>
+    <div class="caja-test" id="test-container">
+        <p>Selecciona un tema para comenzar.</p>
     </div>
 </div>
 
 <script>
-    let diaSeleccionado = null;
-    const storageKey = "plan_estudio_opos";
+    const BANCO_TEST = {
+        1: [
+            { p: "¿Qué define al Estado español según el Art. 1.1 de la CE?", o: ["Estado social y democrático de Derecho", "República parlamentaria", "Estado federal"], r: 0 },
+            { p: "¿Cuál es un valor superior del ordenamiento jurídico español?", o: ["La propiedad", "La libertad", "La eficiencia"], r: 1 },
+            { p: "¿En quién reside la soberanía nacional?", o: ["En el Rey", "En el pueblo español", "En las Cortes"], r: 1 },
+            { p: "¿Qué propugna el Estado Social?", o: ["Igualdad real y efectiva", "Libertad de mercado absoluta", "Eliminación de impuestos"], r: 0 },
+            { p: "¿Cuál es la forma política del Estado español?", o: ["Monarquía parlamentaria", "República unitaria", "Monarquía autoritaria"], r: 0 },
+            { p: "El pluralismo político es un valor...", o: ["Superior del ordenamiento", "Inexistente en la CE", "Secundario"], r: 0 },
+            { p: "¿Qué artículo habla del Estado social y democrático?", o: ["Artículo 1", "Artículo 2", "Artículo 10"], r: 0 },
+            { p: "¿Cuál es la lengua española oficial del Estado?", o: ["El castellano", "El latín", "Todas las lenguas de España"], r: 0 },
+            { p: "¿Qué representan los sindicatos de trabajadores?", o: ["Intereses económicos y sociales", "Al Gobierno", "A la Corona"], r: 0 },
+            { p: "¿Es la bandera de España de tres franjas?", o: ["Sí, roja, amarilla y roja", "No, es bicolor vertical", "Sí, pero de igual ancho"], r: 0 }
+        ],
+        2: [
+            { p: "¿En qué año se celebró el referéndum constitucional?", o: ["1975", "1977", "1978"], r: 2 },
+            { p: "¿Quién fue el primer Presidente de la Transición?", o: ["Adolfo Suárez", "Felipe González", "Carrero Blanco"], r: 0 },
+            { p: "¿Qué ley permitió el paso de la dictadura a la democracia?", o: ["Ley para la Reforma Política", "Ley Seca", "Ley de Enjuiciamiento"], r: 0 },
+            { p: "¿En qué fecha sancionó el Rey la Constitución?", o: ["27 de diciembre de 1978", "6 de diciembre", "31 de octubre"], r: 0 },
+            { p: "¿Cuándo se publicó la CE en el BOE?", o: ["29 de diciembre de 1978", "1 de enero de 1979", "6 de diciembre"], r: 0 },
+            { p: "El consenso constitucional se basó en...", o: ["El acuerdo entre fuerzas políticas", "La imposición militar", "Un decreto ley"], r: 0 },
+            { p: "¿Qué rey lideró la transición?", o: ["Juan Carlos I", "Felipe VI", "Alfonso XIII"], r: 0 },
+            { p: "¿Cuántas disposiciones adicionales tiene la CE?", o: ["4", "9", "2"], r: 0 },
+            { p: "¿Qué tipo de Constitución es la española?", o: ["Rígida y escrita", "Flexible y oral", "Consuetudinaria"], r: 0 },
+            { p: "¿Quiénes son los 'padres' de la Constitución?", o: ["7 ponentes", "Todo el Senado", "Solo el Gobierno"], r: 0 }
+        ],
+        3: [
+            { p: "¿Cuántos artículos tiene la Constitución?", o: ["169", "150", "175"], r: 0 },
+            { p: "¿Qué artículo se reformó en 2011 sobre estabilidad presupuestaria?", o: ["135", "155", "1"], r: 0 },
+            { p: "¿Cuántos títulos tiene la CE incluyendo el preliminar?", o: ["11", "10", "9"], r: 0 },
+            { p: "¿Qué mayoría se requiere para una reforma ordinaria?", o: ["3/5 de cada Cámara", "Mayoría simple", "Unanimidad"], r: 0 },
+            { p: "¿Qué título trata de la reforma constitucional?", o: ["Título X", "Título IX", "Título I"], r: 0 },
+            { p: "¿Se puede reformar la CE en tiempo de guerra?", o: ["No", "Sí, si hay permiso", "Solo por el Rey"], r: 0 },
+            { p: "¿Quién ostenta la iniciativa de reforma?", o: ["Gobierno, Cortes y CCAA", "Solo el pueblo", "Solo el Rey"], r: 0 },
+            { p: "¿Qué artículo protege la unidad de España?", o: ["Artículo 2", "Artículo 1", "Artículo 10"], r: 0 },
+            { p: "La CE se fundamenta en la unidad de la nación...", o: ["Indisoluble", "Divisible por pacto", "Federal"], r: 0 },
+            { p: "¿Qué principio rige la estabilidad presupuestaria?", o: ["Principio de estabilidad", "Gasto ilimitado", "Inestabilidad"], r: 0 }
+        ],
+        4: [
+            { p: "¿Qué derechos son fundamentales 'stricto sensu'?", o: ["Arts. 15 al 29", "Solo el Art. 14", "Todo el Título I"], r: 0 },
+            { p: "¿Cuál es el primer derecho del Art. 15?", o: ["Derecho a la vida", "Libertad de expresión", "Derecho al trabajo"], r: 0 },
+            { p: "¿Se permite la pena de muerte?", o: ["Abolida, salvo leyes militares en guerra", "Sí", "Solo en delitos graves"], r: 0 },
+            { p: "¿Qué artículo garantiza la libertad ideológica?", o: ["Art. 16", "Art. 14", "Art. 18"], r: 0 },
+            { p: "¿Qué mayoría protege los derechos fundamentales?", o: ["Ley Orgánica", "Ley Ordinaria", "Decreto"], r: 0 },
+            { p: "¿Qué recurso protege ante el TC estos derechos?", o: ["Recurso de amparo", "Recurso de alzada", "Recurso contencioso"], r: 0 },
+            { p: "¿Es la objeción de conciencia un derecho fundamental?", o: ["No, pero tiene amparo (30.2)", "Sí", "No existe"], r: 0 },
+            { p: "¿Qué artículo prohíbe la tortura?", o: ["Art. 15", "Art. 10", "Art. 1"], r: 0 },
+            { p: "¿Cuál es la mayoría de edad según el Art. 12?", o: ["18 años", "21 años", "16 años"], r: 0 },
+            { p: "¿Qué artículo garantiza la igualdad ante la ley?", o: ["Art. 14", "Art. 10", "Art. 2"], r: 0 }
+        ],
+        5: [
+            { p: "¿Cuál es el título del Rey?", o: ["Rey de España", "Emperador", "Presidente de Honor"], r: 0 },
+            { p: "¿Quién refrenda los actos del Rey?", o: ["Presidente del Gobierno o Ministros", "Nadie", "Su familia"], r: 0 },
+            { p: "¿Es la persona del Rey responsable?", o: ["Inviolable y no sujeta a responsabilidad", "Sí, ante el TS", "Sí, ante las Cortes"], r: 0 },
+            { p: "¿Quién es el heredero de la Corona?", o: ["Príncipe o Princesa de Asturias", "El más anciano", "El que elija el Rey"], r: 0 },
+            { p: "¿Quién ejerce la Regencia si el Rey es menor?", o: ["El padre o madre", "El Presidente", "El General Jefe"], r: 0 },
+            { p: "¿Quién nombra al Presidente del Gobierno?", o: ["El Rey", "Las Cortes directamente", "El pueblo"], r: 0 },
+            { p: "¿Quién tiene el mando supremo de las Fuerzas Armadas?", o: ["El Rey", "El Ministro de Defensa", "El Parlamento"], r: 0 },
+            { p: "¿Qué artículo regula la Corona?", o: ["Título II", "Título I", "Título III"], r: 0 },
+            { p: "¿Quién provee a la sucesión si se agotan las líneas?", o: ["Las Cortes Generales", "El Gobierno", "Referéndum"], r: 0 },
+            { p: "¿Quién es el tutor del Rey menor?", o: ["Designado en testamento o por Cortes", "El Juez", "El Estado"], r: 0 }
+        ],
+        6: [
+            { p: "¿Cómo se llama el sistema de dos cámaras?", o: ["Bicameralismo", "Unicameralismo", "Dualismo"], r: 0 },
+            { p: "¿Cuál es la cámara de representación territorial?", o: ["El Senado", "El Congreso", "Las CCAA"], r: 0 },
+            { p: "¿Cuántos diputados tiene el Congreso?", o: ["Entre 300 y 400", "500", "250"], r: 0 },
+            { p: "¿Cuál es la duración del mandato de las Cortes?", o: ["4 años", "5 años", "6 años"], r: 0 },
+            { p: "¿Quién elige al Defensor del Pueblo?", o: ["Las Cortes Generales", "El Rey", "El Gobierno"], r: 0 },
+            { p: "¿De quién depende el Tribunal de Cuentas?", o: ["De las Cortes Generales", "Del Poder Judicial", "Del Ministerio de Hacienda"], r: 0 },
+            { p: "¿Qué órgano convalida los Decretos-Leyes?", o: ["El Congreso de los Diputados", "El Senado", "El Tribunal Supremo"], r: 0 },
+            { p: "¿Tienen los parlamentarios inviolabilidad?", o: ["Sí, por opiniones en sus funciones", "No", "Solo el Presidente"], r: 0 },
+            { p: "¿Qué mayoría se requiere para una Ley Orgánica?", o: ["Absoluta del Congreso", "Simple", "3/4"], r: 0 },
+            { p: "¿Quién preside la sesión conjunta de las Cortes?", o: ["Presidente del Congreso", "Presidente del Senado", "El Rey"], r: 0 }
+        ],
+        7: [
+            { p: "¿Quién dirige la política interior y exterior?", o: ["El Gobierno", "El Rey", "El Congreso"], r: 0 },
+            { p: "¿Quién propone al Rey el nombramiento de Ministros?", o: ["El Presidente del Gobierno", "Las Cortes", "El pueblo"], r: 0 },
+            { p: "¿Ante quién responde el Gobierno solidariamente?", o: ["Ante el Congreso de los Diputados", "Ante el Senado", "Ante el Rey"], r: 0 },
+            { p: "¿Qué mayoría requiere la moción de censura?", o: ["Absoluta del Congreso", "Simple", "2/3"], r: 0 },
+            { p: "¿Debe incluir la moción de censura un candidato?", o: ["Sí (Moción constructiva)", "No", "Solo si se quiere"], r: 0 },
+            { p: "¿Quién plantea la cuestión de confianza?", o: ["El Presidente del Gobierno", "El Rey", "La Oposición"], r: 0 },
+            { p: "¿Qué ocurre si el Congreso niega la confianza?", o: ["El Gobierno dimite", "Se disuelve el Senado", "No pasa nada"], r: 0 },
+            { p: "¿Pueden los miembros del Gobierno ejercer comercio?", o: ["No, tienen incompatibilidad", "Sí", "Solo si es poco"], r: 0 },
+            { p: "¿Quién nombra a los Secretarios de Estado?", o: ["El Consejo de Ministros", "El Rey", "El Presidente solo"], r: 0 },
+            { p: "¿Dónde se regulan las funciones del Gobierno?", o: ["Título IV", "Título III", "Título V"], r: 0 }
+        ],
+        8: [
+            { p: "¿En nombre de quién se administra la justicia?", o: ["Del Rey", "Del pueblo", "Del Estado"], r: 0 },
+            { p: "¿Cuál es el órgano de gobierno de los jueces?", o: ["Consejo General del Poder Judicial", "Tribunal Supremo", "Ministerio de Justicia"], r: 0 },
+            { p: "¿Son los jueces responsables?", o: ["Sí, e independientes e inamovibles", "No", "Solo ante el Rey"], r: 0 },
+            { p: "¿Cuál es el órgano jurisdiccional superior en todos los órdenes?", o: ["Tribunal Supremo", "Tribunal Constitucional", "Audiencia Nacional"], r: 0 },
+            { p: "¿Quién nombra al Fiscal General del Estado?", o: ["El Rey, a propuesta del Gobierno", "Los jueces", "Las Cortes"], r: 0 },
+            { p: "¿Es la justicia gratuita?", o: ["Sí, para quienes acrediten insuficiencia de recursos", "Siempre", "Nunca"], r: 0 },
+            { p: "¿Quién preside el TS y el CGPJ?", o: ["La misma persona", "El Rey", "El Ministro"], r: 0 },
+            { p: "¿Cuántos vocales tiene el CGPJ?", o: ["20 más el Presidente", "10", "15"], r: 0 },
+            { p: "¿Están prohibidos los tribunales de excepción?", o: ["Sí", "No", "Solo en guerra"], r: 0 },
+            { p: "¿Qué principio rige la actuación de la Fiscalía?", o: ["Unidad de actuación y dependencia jerárquica", "Independencia total", "Anarquía"], r: 0 }
+        ],
+        9: [
+            { p: "¿Cuántos miembros tiene el TC?", o: ["12", "10", "20"], r: 0 },
+            { p: "¿Por cuánto tiempo son nombrados?", o: ["9 años", "4 años", "Vitalicios"], r: 0 },
+            { p: "¿Quién propone a 4 miembros del TC?", o: ["El Congreso y otros 4 el Senado", "El Rey", "Las CCAA"], r: 0 },
+            { p: "¿Qué recurso se interpone contra leyes?", o: ["Recurso de Inconstitucionalidad", "Recurso de Alzada", "Amparo"], r: 0 },
+            { p: "¿Quién preside el TC?", o: ["Nombrado por el Rey entre sus miembros", "El Rey", "El Presidente del TS"], r: 0 },
+            { p: "¿Son las sentencias del TC recurribles?", o: ["No, tienen valor de cosa juzgada", "Sí, ante el TS", "Sí, ante el Gobierno"], r: 0 },
+            { p: "¿Tiene el TC jurisdicción en toda España?", o: ["Sí", "Solo en Madrid", "No"], r: 0 },
+            { p: "¿Puede el TC declarar la nulidad de una ley?", o: ["Sí", "No, solo el Gobierno", "Solo el Rey"], r: 0 },
+            { p: "¿Quién propone a 2 miembros del TC?", o: ["El Gobierno y otros 2 el CGPJ", "Las Cortes", "El pueblo"], r: 0 },
+            { p: "La condición de miembro del TC es incompatible con...", o: ["Todo mandato representativo", "Nada", "Ser profesor"], r: 0 }
+        ],
+        10: [
+            { p: "¿Qué principio rige a la Administración Pública?", o: ["Eficacia, jerarquía y descentralización", "Caos y lentitud", "Favoritismo"], r: 0 },
+            { p: "¿Qué ley regula el Procedimiento Administrativo Común?", o: ["Ley 39/2015", "Código Penal", "Ley de Caza"], r: 0 },
+            { p: "¿Cuál es un organismo autónomo?", o: ["Entidad con personalidad jurídica propia", "Un ministerio", "Una empresa privada"], r: 0 },
+            { p: "¿Qué artículo de la CE habla de la Administración?", o: ["Art. 103", "Art. 1", "Art. 155"], r: 0 },
+            { p: "¿Quién nombra a los funcionarios?", o: ["La Administración competente", "El Rey siempre", "El azar"], r: 0 },
+            { p: "¿Qué es una Entidad Pública Empresarial?", o: ["Organismo que se financia con ingresos de mercado", "Una ONG", "Un partido"], r: 0 },
+            { p: "¿Qué principio garantiza el acceso al empleo público?", o: ["Mérito y capacidad", "Amistad", "Antigüedad solo"], r: 0 },
+            { p: "¿Está sometida la Administración a la Ley?", o: ["Sí, plenamente", "No", "Solo en parte"], r: 0 },
+            { p: "¿Qué es la Administración Instrumental?", o: ["Organismos creados para tareas específicas", "La policía", "Los jueces"], r: 0 },
+            { p: "¿Quién crea los Ministerios?", o: ["El Presidente del Gobierno por Real Decreto", "Las Cortes", "El Rey"], r: 0 }
+        ]
+    };
 
-    function generarCalendario() {
-        const grid = document.getElementById('calendar-days');
-        grid.innerHTML = '';
-        const tareasGuardadas = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    const TITULOS = [
+        "Tema 1: Estado social y democrático", "Tema 2: La transición española",
+        "Tema 3: Constitución y estabilidad", "Tema 4: Derechos fundamentales",
+        "Tema 5: La Corona", "Tema 6: Cortes Generales",
+        "Tema 7: El Gobierno", "Tema 8: Poder Judicial",
+        "Tema 9: Tribunal Constitucional", "Tema 10: Administración Pública"
+    ];
 
-        for (let i = 1; i <= 31; i++) {
-            const dayDiv = document.createElement('div');
-            const tarea = tareasGuardadas[i] || "";
-            
-            dayDiv.className = 'day' + (tarea ? ' has-task' : '');
-            dayDiv.innerHTML = `<span class="day-number">${i}</span>
-                                <span class="task-preview">${tarea}</span>`;
-            
-            dayDiv.onclick = () => abrirModal(i, tarea);
-            grid.appendChild(dayDiv);
+    let tAct = null, pIdx = 0;
+
+    function iniciar() { renderCal(); renderTem(); }
+
+    function renderCal() {
+        const grid = document.getElementById('cal-grid'), plan = JSON.parse(localStorage.getItem('p_si') || "{}"), hoy = new Date().getDate();
+        grid.innerHTML = "";
+        for(let i=1; i<=31; i++) {
+            const d = document.createElement('div'); d.className = 'dia';
+            const t = plan[i] || "";
+            d.innerHTML = `<span class="dia-num">${i}</span><div class="info-estudio">${t ? 'T'+t : ''}</div>`;
+            d.onclick = () => {
+                let n = prompt("Tema (1-10):", t);
+                if(n !== null) { plan[i]=n; localStorage.setItem('p_si', JSON.stringify(plan)); renderCal(); if(i==hoy) start(n); }
+            };
+            grid.appendChild(d); if(i==hoy && t) start(t);
         }
     }
 
-    function abrirModal(dia, tareaExistente) {
-        diaSeleccionado = dia;
-        document.getElementById('fecha-label').innerText = "Día " + dia;
-        document.getElementById('task-input').value = tareaExistente;
-        document.getElementById('modal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
+    function renderTem() {
+        const dom = document.getElementById('temario-dom'), prog = JSON.parse(localStorage.getItem('g_si') || "[]");
+        dom.innerHTML = "";
+        TITULOS.forEach((tit, i) => {
+            const id = i+1, chk = prog.includes(id) ? "checked" : "";
+            dom.innerHTML += `<div style="margin:5px 0"><input type="checkbox" ${chk} onchange="toggle(${id})"> <span onclick="start(${id})" style="cursor:pointer; color:blue; text-decoration:underline">${tit}</span></div>`;
+        });
+        const p = Math.round((prog.length / 10) * 100);
+        document.getElementById('progreso-relleno').style.width = p + "%";
+        document.getElementById('progreso-relleno').innerText = p + "%";
     }
 
-    function cerrarModal() {
-        document.getElementById('modal').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
+    function toggle(id) {
+        let g = JSON.parse(localStorage.getItem('g_si') || "[]");
+        g.includes(id) ? g = g.filter(x => x!==id) : g.push(id);
+        localStorage.setItem('g_si', JSON.stringify(g)); renderTem();
     }
 
-    function guardarTarea() {
-        const texto = document.getElementById('task-input').value;
-        let tareas = JSON.parse(localStorage.getItem(storageKey) || "{}");
-        
-        if (texto.trim() === "") {
-            delete tareas[diaSeleccionado];
-        } else {
-            tareas[diaSeleccionado] = texto;
-        }
+    function start(id) { tAct = parseInt(id); pIdx = 0; loadP(); }
 
-        localStorage.setItem(storageKey, JSON.stringify(tareas));
-        cerrarModal();
-        generarCalendario(); // Refrescar vista
+    function loadP() {
+        const c = document.getElementById('test-container'), b = BANCO_TEST[tAct];
+        if(!b || pIdx >= 10) { c.innerHTML = "<h3>✅ ¡Completado!</h3>"; return; }
+        const d = b[pIdx];
+        c.innerHTML = `<h3>T${tAct} - ${pIdx+1}/10</h3><p>${d.p}</p>` + 
+                      d.o.map((o, i) => `<button class="opcion-test" onclick="check(${i},${d.r},this)">${o}</button>`).join('') + `<div id="feedback"></div>`;
     }
 
-    window.onload = generarCalendario;
+    function check(e, c, el) {
+        if(e===c) { el.classList.add('correcta'); setTimeout(() => { pIdx++; loadP(); }, 1200); }
+        else { el.classList.add('incorrecta'); }
+    }
+
+    window.onload = iniciar;
 </script>
-
-
-</body></html>
+</body>
+</html>
