@@ -3,49 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academia Secretaría-Intervención</title>
+    <title>Secretaría-Intervención: Academia Pro</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f8f9fa; --success: #27ae60; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 10px; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1, h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+        :root {
+            --google-blue: #1a73e8;
+            --google-red: #ea4335;
+            --google-green: #34a853;
+            --google-gray: #70757a;
+            --border: #dadce0;
+            --bg: #ffffff;
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); 
+            color: #3c4043;
+            margin: 0;
+            padding: 15px;
+        }
+        .container { max-width: 900px; margin: auto; }
         
-        .grid-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
-        .dia { border: 1px solid #ddd; min-height: 60px; padding: 5px; border-radius: 8px; background: #fff; cursor: pointer; }
-        .dia-num { font-weight: bold; color: var(--accent); font-size: 0.9em; }
-        .info-estudio { font-size: 0.7em; color: #555; margin-top: 3px; background: #fff3cd; border-radius: 3px; padding: 2px; }
+        /* Estética Google Calendar */
+        h1 { font-size: 24px; font-weight: 400; color: var(--google-gray); border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        h2 { font-size: 18px; font-weight: 500; color: var(--google-blue); margin-bottom: 10px; }
 
-        .barra-progreso { background: #eee; border-radius: 10px; height: 20px; margin: 15px 0; overflow: hidden; }
-        #progreso-relleno { background: var(--success); width: 0%; height: 100%; transition: 0.5s; text-align: center; color: white; font-size: 0.8em; line-height: 20px; }
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px rgba(60,64,67,0.15); }
+
+        /* Calendario Google Style */
+        .grid-calendar { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+        .dia { 
+            border-right: 1px solid var(--border); 
+            border-bottom: 1px solid var(--border); 
+            min-height: 80px; 
+            padding: 5px; 
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dia:hover { background-color: #f8f9fa; }
+        .dia-num { 
+            font-size: 12px; font-weight: 500; text-align: center; 
+            display: block; width: 24px; height: 24px; line-height: 24px; margin: 2px auto; 
+        }
+        .hoy .dia-num { background-color: var(--google-blue); color: white; border-radius: 50%; }
         
-        .lista-temas { max-height: 200px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; }
+        .info-estudio { 
+            background-color: var(--google-blue); color: white; 
+            font-size: 10px; padding: 2px 4px; border-radius: 4px; 
+            margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        /* Test y Botones */
+        .opcion-test { 
+            display: block; width: 100%; padding: 12px 16px; margin: 8px 0; 
+            border: 1px solid var(--border); border-radius: 8px; background: white; 
+            cursor: pointer; text-align: left; font-size: 14px; transition: 0.2s;
+        }
+        .opcion-test:hover { background-color: #f1f3f4; border-color: var(--google-blue); }
+        .correcta { border-color: var(--google-green); background-color: #e6f4ea !important; color: #137333; font-weight: bold; }
+        .incorrecta { border-color: var(--google-red); background-color: #fce8e6 !important; color: #c5221f; }
+
+        .barra-progreso { background: #e8eaed; border-radius: 10px; height: 8px; margin: 15px 0; overflow: hidden; }
+        #progreso-relleno { background: var(--google-green); height: 100%; transition: width 0.5s; width: 0%; }
         
-        .caja-test { background: #eef2f7; padding: 20px; border-radius: 10px; border-left: 5px solid var(--accent); }
-        .opcion-test { display: block; width: 100%; padding: 12px; margin: 8px 0; background: white; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1em; }
-        .correcta { background: var(--success) !important; color: white; }
-        .incorrecta { background: var(--danger) !important; color: white; }
-        #feedback { font-weight: bold; margin-top: 10px; height: 20px; }
+        .lista-temas { max-height: 250px; overflow-y: auto; font-size: 14px; }
+        .tema-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f1f3f4; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏛️ Secretaría-Intervención</h1>
+    <h1>🏛️ Academia Secretaría-Intervención</h1>
 
-    <h2>1. Calendario</h2>
-    <div class="grid-calendar" id="cal-grid"></div>
+    <div class="card">
+        <h2>Calendario de Planificación</h2>
+        <div class="grid-calendar" id="cal-grid"></div>
+    </div>
 
-    <h2>2. Temario</h2>
-    <div class="barra-progreso"><div id="progreso-relleno">0%</div></div>
-    <div class="lista-temas" id="temario-dom"></div>
+    <div class="card">
+        <h2>Progreso del Temario</h2>
+        <div class="barra-progreso"><div id="progreso-relleno"></div></div>
+        <div id="temario-dom" class="lista-temas"></div>
+    </div>
 
-    <h2>3. Test</h2>
-    <div class="caja-test" id="test-container">
-        <p>Selecciona un tema para comenzar.</p>
+    <div class="card" id="test-section">
+        <h2>Simulador de Test</h2>
+        <div id="test-container">
+            <p style="color: var(--google-gray)">Selecciona un tema o un día para comenzar el test.</p>
+        </div>
     </div>
 </div>
 
 <script>
+    // BASE DE DATOS COMPLETA: 10 TEMAS X 10 PREGUNTAS
     const BANCO_TEST = {
         1: [
             { p: "¿Qué define al Estado español según el Art. 1.1 de la CE?", o: ["Estado social y democrático de Derecho", "República parlamentaria", "Estado federal"], r: 0 },
@@ -170,11 +226,9 @@
     };
 
     const TITULOS = [
-        "Tema 1: Estado social y democrático", "Tema 2: La transición española",
-        "Tema 3: Constitución y estabilidad", "Tema 4: Derechos fundamentales",
-        "Tema 5: La Corona", "Tema 6: Cortes Generales",
-        "Tema 7: El Gobierno", "Tema 8: Poder Judicial",
-        "Tema 9: Tribunal Constitucional", "Tema 10: Administración Pública"
+        "Tema 1: Estado social", "Tema 2: Transición", "Tema 3: Constitución",
+        "Tema 4: Derechos", "Tema 5: Corona", "Tema 6: Cortes",
+        "Tema 7: Gobierno", "Tema 8: Poder Judicial", "Tema 9: Tribunal Constitucional", "Tema 10: Admón. Pública"
     ];
 
     let tAct = null, pIdx = 0;
@@ -182,51 +236,61 @@
     function iniciar() { renderCal(); renderTem(); }
 
     function renderCal() {
-        const grid = document.getElementById('cal-grid'), plan = JSON.parse(localStorage.getItem('p_si') || "{}"), hoy = new Date().getDate();
+        const grid = document.getElementById('cal-grid'), plan = JSON.parse(localStorage.getItem('p_si_g_v2') || "{}"), hoy = new Date().getDate();
         grid.innerHTML = "";
         for(let i=1; i<=31; i++) {
-            const d = document.createElement('div'); d.className = 'dia';
+            const d = document.createElement('div');
+            d.className = 'dia' + (i === hoy ? ' hoy' : '');
             const t = plan[i] || "";
-            d.innerHTML = `<span class="dia-num">${i}</span><div class="info-estudio">${t ? 'T'+t : ''}</div>`;
+            d.innerHTML = `<span class="dia-num">${i}</span>${t ? '<div class="info-estudio">Tema '+t+'</div>' : ''}`;
             d.onclick = () => {
-                let n = prompt("Tema (1-10):", t);
-                if(n !== null) { plan[i]=n; localStorage.setItem('p_si', JSON.stringify(plan)); renderCal(); if(i==hoy) start(n); }
+                let n = prompt("Asignar Tema (1-10):", t);
+                if(n !== null) { plan[i]=n; localStorage.setItem('p_si_g_v2', JSON.stringify(plan)); renderCal(); if(i==hoy) start(n); }
             };
             grid.appendChild(d); if(i==hoy && t) start(t);
         }
     }
 
     function renderTem() {
-        const dom = document.getElementById('temario-dom'), prog = JSON.parse(localStorage.getItem('g_si') || "[]");
+        const dom = document.getElementById('temario-dom'), prog = JSON.parse(localStorage.getItem('g_si_g_v2') || "[]");
         dom.innerHTML = "";
         TITULOS.forEach((tit, i) => {
             const id = i+1, chk = prog.includes(id) ? "checked" : "";
-            dom.innerHTML += `<div style="margin:5px 0"><input type="checkbox" ${chk} onchange="toggle(${id})"> <span onclick="start(${id})" style="cursor:pointer; color:blue; text-decoration:underline">${tit}</span></div>`;
+            dom.innerHTML += `<div class="tema-item">
+                <input type="checkbox" ${chk} onchange="toggle(${id})"> 
+                <span onclick="start(${id})" style="cursor:pointer; color:var(--google-blue); text-decoration: underline;">${tit}</span>
+            </div>`;
         });
-        const p = Math.round((prog.length / 10) * 100);
-        document.getElementById('progreso-relleno').style.width = p + "%";
-        document.getElementById('progreso-relleno').innerText = p + "%";
+        document.getElementById('progreso-relleno').style.width = (prog.length * 10) + "%";
     }
 
     function toggle(id) {
-        let g = JSON.parse(localStorage.getItem('g_si') || "[]");
+        let g = JSON.parse(localStorage.getItem('g_si_g_v2') || "[]");
         g.includes(id) ? g = g.filter(x => x!==id) : g.push(id);
-        localStorage.setItem('g_si', JSON.stringify(g)); renderTem();
+        localStorage.setItem('g_si_g_v2', JSON.stringify(g)); renderTem();
     }
 
     function start(id) { tAct = parseInt(id); pIdx = 0; loadP(); }
 
     function loadP() {
         const c = document.getElementById('test-container'), b = BANCO_TEST[tAct];
-        if(!b || pIdx >= 10) { c.innerHTML = "<h3>✅ ¡Completado!</h3>"; return; }
+        if(!b || pIdx >= 10) { c.innerHTML = "<h3>✅ Tema completado</h3><p>¡Buen trabajo! Selecciona otro tema para seguir.</p>"; return; }
         const d = b[pIdx];
-        c.innerHTML = `<h3>T${tAct} - ${pIdx+1}/10</h3><p>${d.p}</p>` + 
-                      d.o.map((o, i) => `<button class="opcion-test" onclick="check(${i},${d.r},this)">${o}</button>`).join('') + `<div id="feedback"></div>`;
+        c.innerHTML = `<p style="color:var(--google-gray); font-size:12px; margin:0">PREGUNTA ${pIdx+1} DE 10</p>
+                      <p style="font-size:16px; margin:10px 0; font-weight: 500;">${d.p}</p>` + 
+                      d.o.map((o, i) => `<button class="opcion-test" onclick="check(${i},${d.r},this)">${o}</button>`).join('') + `<div id="feedback" style="font-size:14px; margin-top:10px; height:20px;"></div>`;
     }
 
     function check(e, c, el) {
-        if(e===c) { el.classList.add('correcta'); setTimeout(() => { pIdx++; loadP(); }, 1200); }
-        else { el.classList.add('incorrecta'); }
+        const f = document.getElementById('feedback');
+        const botones = document.querySelectorAll('.opcion-test');
+        if(e===c) { 
+            el.classList.add('correcta'); f.innerHTML = "✅ ¡Correcto!";
+            botones.forEach(b => b.onclick = null);
+            setTimeout(() => { pIdx++; loadP(); }, 1200); 
+        } else { 
+            el.classList.add('incorrecta'); f.innerHTML = "❌ Prueba de nuevo";
+        }
     }
 
     window.onload = iniciar;
